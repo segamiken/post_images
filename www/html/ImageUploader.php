@@ -21,13 +21,30 @@
                 //create thumbnail
                 $this->_createThumbnail($savePath);
 
+                $_SESSION['success'] = 'Upload Done!!';
+
             } catch (\Exception $e) {
-                echo $e->getMessage();
+                $_SESSION['error'] = $e->getMessage();
                 exit;
             }
             //redirect
             header('Location: http://' . $_SERVER['HTTP_HOST']);
             exit;
+        }
+
+        //サクセス、エラーを取得
+        public function getResults() {
+            $success = null;
+            $error = null;
+            if (isset($_SESSION['success'])) {
+                $success = $_SESSION['success'];
+                unset($_SESSION['success']);
+            }
+            if (isset($_SESSION['error'])) {
+                $error = $_SESSION['error'];
+                unset($_SESSION['error']);
+            }
+            return [$success, $error];
         }
 
         //表示する画像のデータを取得して$imagesを返す

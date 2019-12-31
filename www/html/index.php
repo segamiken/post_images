@@ -1,4 +1,5 @@
 <?php
+    session_start();
 
     //error内容をブラウザ画面にも表示する！
     ini_set('display_errors', 1);
@@ -24,7 +25,8 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploader->upload();
     }
-    
+
+    list($success, $error) = $uploader->getResults();    
     $images = $uploader->getImages();
 ?>
 
@@ -39,16 +41,29 @@
 </head>
 <body>
     <!-- 画像投稿用のフォーム-->
-    <form action="" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo h(MAX_FILE_SIZE); ?>">
-        <input type="file" name="image">
-        <input type="submit" value="upload">
-    </form>
+    <div class="btn">
+        Upload!
+        <form action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo h(MAX_FILE_SIZE); ?>">
+            <input type="file" name="image">
+        </form>
+    </div>
+    
+    <?php if (isset($success)) : ?>
+        <div class="msg success">
+            <?php echo h($success); ?>
+        </div>
+    <?php endif; ?>
+    <?php if (isset($error)) : ?>
+        <div class="msg error">
+            <?php echo h($error); ?>
+        </div>
+    <?php endif; ?>
 
     <ul>
         <?php foreach ($images as $image) : ?>
         <li>
-            <a href="<?php echo h(basename(IMAGES_DIR)) . '/' . basename($image); ?>">
+            <a href="<?php echo h(basename(IMAGES_DIR)) . '/' . h(basename($image)); ?>">
                 <img src="<?php echo h($image); ?>">
             </a>
         </li>
