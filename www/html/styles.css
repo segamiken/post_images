@@ -2,3 +2,13 @@ body {
     text-align: center;
     font-family: Arial, sans-serif;
 }
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 5px;
+}

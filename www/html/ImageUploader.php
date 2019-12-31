@@ -6,6 +6,7 @@
         private $_imageFileName;
         private $_imageType;
 
+        //index.phpから最初に呼ばれるメソッド
         public function upload() {
             try {
                 //error check
@@ -27,6 +28,27 @@
             //redirect
             header('Location: http://' . $_SERVER['HTTP_HOST']);
             exit;
+        }
+
+        //表示する画像のデータを取得して$imagesを返す
+        public function getImages() {
+            $images = [];
+            $files = [];
+            $imageDir = opendir(IMAGES_DIR);
+            while (false !== ($file = readdir($imageDir))) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+                $files[] = $file;
+                if (file_exists(THUMBNAIL_DIR . '/' . $file)) {
+                    $images[] = basename(THUMBNAIL_DIR) . '/' . $file;
+                } else {
+                    $images[] = basename(IMAGES_DIR) . '/' . $file;
+                }
+                
+            }
+            array_multisort($files, SORT_DESC, $images);
+            return $images;
         }
 
         //サムネイルを作成 400pxより大きければMainメソッドに処理を渡す
@@ -71,8 +93,7 @@
         }
 
 
-
-        //画像の保存先のパスを指定してそのパスを返り値として返す
+        //画像の保存先のパスを指定してそのパス($savePath)を返り値として返す
         private function _save($ext) {
             $this->_imageFileName = sprintf(
                 '%s_%s.%s',
@@ -89,6 +110,7 @@
         }
 
         //ファイルのタイプをチャックしてエラー文を返す！
+        //TO DO::exid_imagetypeがno method error.....php.iniを編集するも解決せず。
         private function _validateImageType() {
             $this->_imageType = exif_imagetype($_FILES['image']['tmp_name']);
             switch($this->_imageType) {
